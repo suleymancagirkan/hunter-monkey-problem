@@ -1,26 +1,164 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --font-game: var(--font-game), cursive, sans-serif;
+    --font-ui: var(--font-ui), sans-serif;
+  }
+
+  body {
+    font-family: var(--font-ui), sans-serif;
+    background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+    min-height: 100vh;
+    color: #1e293b;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.font-game {
+  font-family: var(--font-game), cursive, sans-serif;
+}
+
+.font-ui {
+  font-family: var(--font-ui), sans-serif;
+}
+
+/* 3D Kabartmalı Panel & Kart Stilleri (Skeuomorphic / Tactile 3D) */
+.panel-3d {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-bottom: 5px solid #cbd5e1;
+  box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel-3d-glow {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-bottom: 5px solid #93c5fd;
+  box-shadow: 0 16px 32px -8px rgba(37, 99, 235, 0.15), 0 6px 12px -3px rgba(37, 99, 235, 0.08);
+}
+
+/* 3D Basılabilir Buton Efektleri */
+.btn-3d-emerald {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-bottom: 4px solid #047857;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+  transition: all 0.1s ease;
+}
+.btn-3d-emerald:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(5, 150, 105, 0.4);
+}
+.btn-3d-emerald:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+}
+
+.btn-3d-blue {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  border-bottom: 4px solid #1e3a8a;
+  box-shadow: 0 4px 10px rgba(29, 78, 216, 0.35);
+  transition: all 0.1s ease;
+}
+.btn-3d-blue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(29, 78, 216, 0.45);
+}
+.btn-3d-blue:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.3);
+}
+
+.btn-3d-amber {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  border-bottom: 4px solid #b45309;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.35);
+  transition: all 0.1s ease;
+}
+.btn-3d-amber:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(217, 119, 6, 0.45);
+}
+.btn-3d-amber:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
+}
+
+.btn-3d-white {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
+  border-bottom: 3px solid #94a3b8;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+  transition: all 0.1s ease;
+}
+.btn-3d-white:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+.btn-3d-white:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+/* 3D Kokpit Slider Tasarımı */
+.slider-track-3d {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 9999px;
+  height: 10px;
+}
+
+input[type="range"].slider-3d {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(180deg, #cbd5e1 0%, #e2e8f0 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  height: 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"].slider-3d::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #38bdf8 40%, #0284c7 80%, #0369a1 100%);
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.8), 0 0 0 2px #ffffff;
+  cursor: grab;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+input[type="range"].slider-3d::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+  box-shadow: 0 6px 12px rgba(2, 132, 199, 0.6), inset 0 2px 2px rgba(255, 255, 255, 0.9), 0 0 0 2px #ffffff;
+}
+
+input[type="range"].slider-3d::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.25);
+  box-shadow: 0 0 14px rgba(14, 165, 233, 0.9), inset 0 2px 2px rgba(255, 255, 255, 1), 0 0 0 3px #ffffff;
+}
+
+/* LED & Glow Işık Göstergeleri */
+.led-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Dijital Ekran (LCD) Efekti */
+.lcd-screen {
+  background: #090d16;
+  border: 2px solid #1e293b;
+  border-bottom: 3px solid #334155;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  font-family: monospace;
 }
