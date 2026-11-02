@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Header from "../components/Header";
+import Simulation3D from "../components/Simulation3D";
 import SimulationCanvas from "../components/SimulationCanvas";
 import ControlPanel from "../components/ControlPanel";
 import PhysicsStats from "../components/PhysicsStats";
 import TheoryExplainer from "../components/TheoryExplainer";
 
 export default function Home() {
-  // Kamera Görünüm Modu ('side': 2.5D Saha | 'scope': Avcının Gözünden Dürbün)
-  const [viewMode, setViewMode] = useState("side");
+  // 3D vs 2D Görünüm Modu ('3d' | '2d')
+  const [dimensionMode, setDimensionMode] = useState("3d");
   const [soundMuted, setSoundMuted] = useState(false);
   const [isExplainerOpen, setIsExplainerOpen] = useState(false);
 
@@ -35,7 +36,7 @@ export default function Home() {
   // Canlı Telemetri İstatistikleri
   const [stats, setStats] = useState({
     simTime: "0.00",
-    bulletX: "10.0",
+    bulletX: "0.0",
     bulletY: "2.0",
     bulletSpeed: "38.0",
     monkeyY: "30.0",
@@ -43,6 +44,11 @@ export default function Home() {
     distToMonkey: "50.0",
     angleDeg: "29.2",
   });
+
+  // Sabit useCallback ile telemetri güncellemesi (Render döngüsü kaskadını önler)
+  const handleStatsUpdate = useCallback((newStats) => {
+    setStats((prev) => ({ ...prev, ...newStats }));
+  }, []);
 
   // Varsayılan değerlere sıfırlama
   const handleResetDefaults = () => {
@@ -55,15 +61,14 @@ export default function Home() {
     setManualAngle(30.0);
     setProjectileType("banana");
     setTimeScale(1.0);
-    setViewMode("side");
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800">
-      {/* 3D Üst Navigasyon & Kamera Kontrolü */}
+      {/* 3D Üst Navigasyon & Mod Seçici */}
       <Header
-        viewMode={viewMode}
-        setViewMode={setViewMode}
+        dimensionMode={dimensionMode}
+        setDimensionMode={setDimensionMode}
         soundMuted={soundMuted}
         setSoundMuted={setSoundMuted}
         onReset={handleResetDefaults}
@@ -71,47 +76,74 @@ export default function Home() {
       />
 
       {/* 
-        SPLIT-SCREEN KOKPİT DÜZENİ:
-        Slider değiştirirken sahneden asla kopmama garantisi!
-        Sol: Ekranda her an sabit (Sticky / Göz Önünde) Canlı 2.5D Sahne
-        Sağ: Anlık Slider Kontrolleri ve Canlı Fizik Telemetrisi
+        SPLIT-SCREEN DASHBOARD:
+        Sol Taraf: 3D FPS Sahnesi (Sabit / Sticky) - Yürü, butona bas, canlı izle
+        Sağ Taraf: 3D Kokpit Kontrolleri ve Canlı Fizik Telemetrisi
       */}
       <main className="flex-1 w-full max-w-[1700px] mx-auto px-3 sm:px-5 py-4">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
           
-          {/* SOL BÖLGE (xl: 7 Kolon): Sticky Canlı Sahne */}
-          <div className="xl:col-span-7 xl:sticky xl:top-[68px] z-20 space-y-4">
-            <SimulationCanvas
-              hunterX={10}
-              hunterY={2}
-              monkeyX={10 + hunterDistance}
-              monkeyY={treeHeight}
-              muzzleVelocity={muzzleVelocity}
-              gravity={gravity}
-              monkeyDropDelay={monkeyDropDelay}
-              aimAngle={isAutoAim ? null : manualAngle}
-              isAutoAim={isAutoAim}
-              projectileType={projectileType}
-              showSightline={showSightline}
-              showTrails={showTrails}
-              showDeltaH={showDeltaH}
-              showGrid={showGrid}
-              timeScale={timeScale}
-              viewMode={viewMode}
-              onStatsUpdate={setStats}
-            />
+          {/* SOL SÜTUN (7 Kolon): Sticky 3D / 2.5D Sahne */}
+          <div className="xl:col-span-7 xl:sticky xl:top-[68px] z-20 space-y-3">
+            <div key={dimensionMode} className="animate-dimension-enter">
+              {dimensionMode === "3d" ? (
+                <Simulation3D
+                  hunterDistance={hunterDistance}
+                  treeHeight={treeHeight}
+                  muzzleVelocity={muzzleVelocity}
+                  gravity={gravity}
+                  monkeyDropDelay={monkeyDropDelay}
+                  aimAngle={isAutoAim ? null : manualAngle}
+                  manualAngle={manualAngle}
+                  isAutoAim={isAutoAim}
+                  projectileType={projectileType}
+                  timeScale={timeScale}
+                  onStatsUpdate={handleStatsUpdate}
+                  setHunterDistance={setHunterDistance}
+                  setTreeHeight={setTreeHeight}
+                  setMuzzleVelocity={setMuzzleVelocity}
+                  setGravity={setGravity}
+                  setMonkeyDropDelay={setMonkeyDropDelay}
+                  setIsAutoAim={setIsAutoAim}
+                  setManualAngle={setManualAngle}
+                  setProjectileType={setProjectileType}
+                  setTimeScale={setTimeScale}
+                />
+              ) : (
+                <SimulationCanvas
+                  hunterX={10}
+                  hunterY={2}
+                  monkeyX={10 + hunterDistance}
+                  monkeyY={treeHeight}
+                  muzzleVelocity={muzzleVelocity}
+                  gravity={gravity}
+                  monkeyDropDelay={monkeyDropDelay}
+                  aimAngle={isAutoAim ? null : manualAngle}
+                  isAutoAim={isAutoAim}
+                  projectileType={projectileType}
+                  showSightline={showSightline}
+                  showTrails={showTrails}
+                  showDeltaH={showDeltaH}
+                  showGrid={showGrid}
+                  timeScale={timeScale}
+                  onStatsUpdate={handleStatsUpdate}
+                />
+              )}
+            </div>
 
-            {/* Sahne Altı Hızlı Durum / Kılavuz İpucu Barı */}
-            <div className="hidden xl:flex items-center justify-between px-4 py-2 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200 text-xs text-slate-500 font-semibold shadow-2xs">
-              <span className="flex items-center gap-1.5 text-slate-700">
+            {/* Sahne Altı Bilgi Şeridi */}
+            <div className="hidden xl:flex items-center justify-between px-4 py-2.5 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200 text-xs text-slate-600 font-semibold shadow-2xs">
+              <span className="flex items-center gap-2">
                 <span className="led-indicator text-emerald-500" />
-                <span>Canlı Sahne Senkronizasyonu Aktif</span>
+                <span>3D Canlı FPS Senkronizasyonu Aktif</span>
               </span>
-              <span>Sağdaki sliderları oynattığınızda ağaç ve nişan anında güncellenir.</span>
+              <span className="text-slate-500">
+                WASD ile kaideye yürüyün, <strong className="text-emerald-700">[E]</strong> veya butona basarak ateşleyin!
+              </span>
             </div>
           </div>
 
-          {/* SAĞ BÖLGE (xl: 5 Kolon): Kontrol Konsolu & Telemetri */}
+          {/* SAĞ SÜTUN (5 Kolon): Kontrol Paneli & Telemetri */}
           <div className="xl:col-span-5 space-y-5">
             {/* 3D Dijital Telemetri Göstergesi */}
             <PhysicsStats
@@ -167,10 +199,10 @@ export default function Home() {
       <footer className="mt-auto border-t-2 border-slate-200 bg-white/90 py-3 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span className="font-bold">
-            🎯 Avcı & Maymun Fizik Problemi — İnteraktif Mekanik Laboratuvarı
+            🎯 Avcı & Maymun Fizik Problemi — 3D Etkileşimli FPS Simülasyonu
           </span>
           <span className="font-mono text-slate-400">
-            Split-Dashboard Viewport • Canlı Senkronizasyon
+            Three.js WebGL • 3D Pedestal & Button • FPS Walk
           </span>
         </div>
       </footer>
